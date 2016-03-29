@@ -4,12 +4,9 @@ Created on 25/mar/2016
 @author: Andrea Dell'Orto
 '''
 
-import configparser
-import inspect
-import os
-
 from JIRAScriptExporter.JIRA_reader import JIRAReader
 from JIRAScriptExporter.instruction_creator import InstructionCreator
+
 
 if __name__ == '__main__':
     reader = JIRAReader()
