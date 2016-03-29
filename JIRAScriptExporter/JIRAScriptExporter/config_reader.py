@@ -1,7 +1,7 @@
 '''
 Created on 29/mar/2016
 
-@author: A22J
+@author: Andrea Dell'Orto
 '''
 import configparser
 import inspect

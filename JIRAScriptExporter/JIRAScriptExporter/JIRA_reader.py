@@ -46,13 +46,15 @@ class JIRAReader(object):
                     out_file = open("temp.csv","wb")
                     out_file.write(att.get())
                     out_file.close()
-                    return out_file
-                
+                    return out_file.name
             else:
                 print("Unexpected error: there's no \'script\' section in cfg file!")
         else:
             print("ERROR: No file named " + self.conf.get('script', 'file_name') + " were found!")
-            
+    
+    def get_option(self):
+        return self.opt
+    
     def read_csv_file(self, file_to_open):
         '''
         This method returns a list of script contained in a CSV file
