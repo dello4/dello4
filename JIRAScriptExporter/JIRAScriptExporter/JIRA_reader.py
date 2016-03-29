@@ -4,14 +4,17 @@ Created on 25/mar/2016
 @author: Andrea Dell'Orto
 '''
 import sys
-from JIRAScriptExporter import script_exporter
+
 from jira import JIRA
+
+from JIRAScriptExporter.config_reader import ConfigFileReader
+
 
 class JIRAReader(object):
     '''
     Class implementing a task reader for jira
     '''
-    conf = script_exporter.ConfigFileReader()
+    conf = ConfigFileReader()
 
     def __init__(self, conf):
         self.conf = conf

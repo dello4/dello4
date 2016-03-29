@@ -11,13 +11,6 @@ import os
 from JIRAScriptExporter.JIRA_reader import JIRAReader
 from JIRAScriptExporter.instruction_creator import InstructionCreator
 
-
-def ConfigFileReader():
-    cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\JIRAExporter.cfg'
-    config = configparser.ConfigParser()
-    config.readfp(open(cfgFilePath))
-    return config
-
 if __name__ == '__main__':
     reader = JIRAReader()
     file = reader.get_file(input("Issue number: "))
