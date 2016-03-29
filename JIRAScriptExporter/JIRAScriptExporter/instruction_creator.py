@@ -3,6 +3,9 @@ Created on 25/mar/2016
 
 @author: Andrea Dell'Orto
 '''
+import csv
+import io
+
 
 class InstructionCreator(object):
     '''
@@ -17,5 +20,8 @@ class InstructionCreator(object):
         self.file = file
     
     def generate_instructions(self):
-        for rec in self.file:
-            pass
+        #for rec in self.file:
+        #    pass
+        csv_file = open(self.file)
+        csv_reader = csv.reader(csv_file)
+        print(list(csv_reader))
