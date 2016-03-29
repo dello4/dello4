@@ -47,6 +47,7 @@ class JIRAReader(object):
                     out_file.write(att.get())
                     out_file.close()
                     return out_file
+                
             else:
                 print("Unexpected error: there's no \'script\' section in cfg file!")
         else:
