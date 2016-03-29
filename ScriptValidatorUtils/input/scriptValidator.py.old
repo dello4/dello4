@@ -1,0 +1,30 @@
+# coding=utf-8
+
+import os, re
+
+inputdir = 'E:\\nsr\\scriptutils\\input'
+#inputdir = '/Users/dellovezzo/Desktop/input/'
+
+isError = False
+
+for file in os.listdir(inputdir):
+    #Only sql files
+    if file.endswith(".sql"):
+        file = os.path.join(inputdir,file)
+        script = open(file)
+        scriptAsString = script.read().lower()
+        logname = 'spool &path.&nomeschema._'+os.path.splitext(os.path.basename(script.name))[0]+'.log\n'
+        #All strings are analized in lowercase
+        strings = [logname.lower(), 'commit;\n', 'spool off']
+        #Errors list
+        errors = ["&path&","&nomeschema ", " nomeschma.", "nomescema", "&nomeschema_"]
+        if all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errors):
+            print("Script " + os.path.basename(script.name) + " è verificato.")
+        else:
+            print("ERRORE: Lo script " + file + " non rispetta lo standard!! - Non è presente o è scritto male ")
+            script.close()
+            isError = True
+            break
+        script.close()
+if not isError:
+    print("Tutti gli script sembrano essere coerenti!")
