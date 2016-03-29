@@ -18,11 +18,15 @@ class JIRAReader(object):
         self.conf = conf
         
     def connect(self):
-        if self.conf.has_section('jira_url'):
+        if self.conf.has_section('jira'):
             try:
-                jira = JIRA(self.conf.get('jira_url', 'url'))
+                jira_options = {'server': self.conf.get('jira', 'url')}
+                jira = JIRA(options=jira_options,basic_auth=(self.conf.get('jira', 'jira_user'), self.conf.get('jira', 'jira_password')))
             except(ConnectionError, ConnectionRefusedError) as e:
                 print('Error connecting to %1: ({0}) {1}' % self.conf.get('jira_url', 'url'), e.errno, e.strerror)
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
+        return jira
+
+    def get_files(self):
