@@ -10,8 +10,12 @@ class InstructionCreator(object):
     '''
 
 
-    def __init__(self, params):
+    def __init__(self, file):
         '''
         Constructor
         '''
-        
+        self.file = file
+    
+    def generate_instructions(self):
+        for rec in self.file:
+            pass
