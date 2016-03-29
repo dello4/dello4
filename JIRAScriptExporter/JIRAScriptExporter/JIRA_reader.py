@@ -6,13 +6,11 @@ Created on 25/mar/2016
 import sys
 from JIRAScriptExporter import script_exporter
 from jira import JIRA
-from test.test_zipfile import get_files
 
 class JIRAReader(object):
     '''
-    Class who connects to JIRA and gest csv file
+    Class implementing a task reader for jira
     '''
-    
     conf = script_exporter.ConfigFileReader()
 
     def __init__(self, conf):
@@ -22,7 +20,7 @@ class JIRAReader(object):
         if self.conf.has_section('jira'):
             try:
                 jira_options = {'server': self.conf.get('jira', 'url')}
-                jira = JIRA(options=jira_options,basic_auth=(self.conf.get('jira', 'jira_user'), self.conf.get('jira', 'jira_password')))
+                jira = JIRA(options=jira_options, basic_auth=(self.conf.get('jira', 'jira_user'), self.conf.get('jira', 'jira_password')))
             except(ConnectionError, ConnectionRefusedError) as e:
                 print('Error connecting to %1: ({0}) {1}' % self.conf.get('jira_url', 'url'), e.errno, e.strerror)
             except:
@@ -30,17 +28,29 @@ class JIRAReader(object):
                 raise
         return jira
 
-    def get_files(self):
+    def get_file(self, issue_id):
+        '''
+        This method returns a file of a given name, attached to a JIRA task 
+        '''
         jira = self.connect()
-        issue = jira.issue("")
+        issue = jira.issue(issue_id)
         attach_list = issue.fields.attachment
         for att in attach_list:
             if self.conf.has_section('script'):
                 if self.conf.get('script', 'file_name') == att.filename:
                     return att
-
-    def read_csv_file(self):
-        csv_file = open(self.get_files())
+            else:
+                print("Unexpected error: there's no \'script\' section in cfg file!")
+        else:
+            print("ERROR: No file named " + self.conf.get('script', 'file_name') + " were found!")
+            
+    def read_csv_file(self, file_to_open):
+        '''
+        This method returns a list of script contained in a CSV file
+        '''
+        csv_file = open(file_to_open)
         scriptsAsString = csv_file.read().lower()
-        scripts_list = scriptsAsString.split[',']
-        return scripts_list
+        if self.conf.get('script', 'split_enabled'):
+            scripts_list = scriptsAsString.split(self.conf.get('script', 'split_separator'))
+            return scripts_list
+        return scriptsAsString

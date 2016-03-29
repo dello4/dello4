@@ -17,3 +17,5 @@ def ConfigFileReader():
 
 if __name__ == '__main__':
     jira_reader = JIRAScriptExporter.JIRA_reader()
+    file = jira_reader.get_file(input("Issue number: "))
+    
