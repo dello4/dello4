@@ -6,6 +6,7 @@ Created on 25/mar/2016
 import sys
 from JIRAScriptExporter import script_exporter
 from jira import JIRA
+from test.test_zipfile import get_files
 
 class JIRAReader(object):
     '''
@@ -30,3 +31,16 @@ class JIRAReader(object):
         return jira
 
     def get_files(self):
+        jira = self.connect()
+        issue = jira.issue("")
+        attach_list = issue.fields.attachment
+        for att in attach_list:
+            if self.conf.has_section('script'):
+                if self.conf.get('script', 'file_name') == att.filename:
+                    return att
+
+    def read_csv_file(self):
+        csv_file = open(self.get_files())
+        scriptsAsString = csv_file.read().lower()
+        scripts_list = scriptsAsString.split[',']
+        return scripts_list
