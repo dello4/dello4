@@ -10,7 +10,7 @@ import os
 import JIRAScriptExporter.JIRA_reader
 
 def ConfigFileReader():
-    cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\config.ini'
+    cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\JIRAExporter.cfg'
     config = configparser.ConfigParser()
     config.readfp(open(cfgFilePath))
     return config
