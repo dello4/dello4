@@ -1,0 +1,19 @@
+
+    *********************************************
+    *  JIRA Script Exporter by Andrea Dell'Orto *
+    *                                           *
+    *                 v. 0.0.1                  *
+    *********************************************
+
+Purpose of the program:
+
+this program was intended to connect to a JIRA task, download a csv file containing script names
+and write the full local path of those files in a txt instruction file.
+
+The proposed workflow is as follow:
+
+1. Connection to an Atlassian JIRA whose link was derived from a cfg file.s
+2. If connection is successfully established, the program tries to download the file (the standard for the filename is defined into a cfg file)
+3. If the file's download is successfull, the program reads the file names and put them into a List.
+4. The program search for those files in a specified directory (from the cfg file) and its subdirectories.
+5. When the files are found theyr full path is written in a txt file starting from the line following a line composed only by a $.

@@ -1,7 +1,7 @@
 '''
 Created on 25/mar/2016
 
-@author: A22J
+@author: Andrea Dell'Orto
 '''
 
 class InstructionCreator(object):
