@@ -27,7 +27,9 @@ class JIRAReader(object):
         if self.opt.has_section('jira'):
             try:
                 jira_options = {'server': self.opt.get('jira', 'url')}
+                print("Connecting to {0}".format(jira_options['server']))
                 jira = JIRA(options=jira_options, basic_auth=(self.opt.get('jira', 'jira_user'), self.opt.get('jira', 'jira_password')))
+                print("Connection established")
             except(ConnectionError, ConnectionRefusedError) as e:
                 print('Error connecting to %1: ({0}) {1}' % self.opt.get('jira_url', 'url'), e.errno, e.strerror)
             except:
@@ -48,6 +50,7 @@ class JIRAReader(object):
                     '''
                     Using a temporary file to store data from the attachment
                     '''
+                    print("Downloading file {0}".format(att.filename))
                     tfile = NamedTemporaryFile('wb', delete=False)
                     tfile.write(att.get())
                     return tfile.name

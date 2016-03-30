@@ -5,6 +5,8 @@ Created on 25/mar/2016
 '''
 import csv
 import os
+import sys
+
 
 class InstructionCreator(object):
     '''
@@ -48,4 +50,14 @@ class InstructionCreator(object):
                             out_path = out_path.replace(root_to_find_in,'.\\')
                         out_file.writelines('\t' + out_path + '\n')
                         index +=1
-            out_file.close()
+                        print("Writing line {0} of {1}".format(index, len(rows)))
+                print("Instructions file created.")
+        elif self.case_txt == source_type:
+            pass
+        else:
+            print("No valid value for source_type in JIRAExporter.cfg !!!")
+        print("Saving instruction file.")
+        out_file.close()
+        print("File {0} saved.".format(out_file.name))
+        sys.exit(2)
+            
