@@ -5,6 +5,8 @@ Created on 25/mar/2016
 '''
 import csv
 import sys
+from tempfile import TemporaryFile, NamedTemporaryFile
+import tempfile
 
 from jira import JIRA
 
@@ -43,10 +45,12 @@ class JIRAReader(object):
         for att in attach_list:
             if self.opt.has_section('script'):
                 if self.opt.get('script', 'file_name') == att.filename:
-                    out_file = open("temp.csv","wb")
-                    out_file.write(att.get())
-                    out_file.close()
-                    return out_file.name
+                    '''
+                    Using a temporary file to store data from the attachment
+                    '''
+                    tfile = NamedTemporaryFile('wb', delete=False)
+                    tfile.write(att.get())
+                    return tfile.name
             else:
                 print("Unexpected error: there's no \'script\' section in cfg file!")
         else:

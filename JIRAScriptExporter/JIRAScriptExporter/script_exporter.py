@@ -13,4 +13,4 @@ if __name__ == '__main__':
     #file = reader.get_file(input("Issue number: "))
     file = reader.get_file('BPMPEF-1906')
     inst_creator = InstructionCreator(file,reader.get_option())
-    inst_creator.generate_instructions()
+    inst_creator.generate_instructions(inst_creator.opt.get('system','source_type'))
