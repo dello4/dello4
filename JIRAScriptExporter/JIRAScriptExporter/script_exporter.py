@@ -12,5 +12,5 @@ if __name__ == '__main__':
     reader = JIRAReader()
     #file = reader.get_file(input("Issue number: "))
     file = reader.get_file('BPMPEF-1906')
-    inst_creator = InstructionCreator(file)
-    inst_creator.generate_instructions(reader.get_option())
+    inst_creator = InstructionCreator(file,reader.get_option())
+    inst_creator.generate_instructions()

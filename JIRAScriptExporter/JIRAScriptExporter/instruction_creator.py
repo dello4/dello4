@@ -10,19 +10,22 @@ class InstructionCreator(object):
     This class creates a .txt file based on the dictionary containing the classpaths.
     '''
 
-    def __init__(self, file):
+    def __init__(self, file, opt):
         '''
         Constructor
         '''
         self.file = file
+        self.opt = opt
     
     def generate_instructions(self):
-        #for rec in self.file:
+        # for rec in self.file:
         #    pass
         with open(self.file) as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            out_file = open("istruzioni.txt","a")
+            delimiter = self.opt.get('script', 'split_separator')
+            reader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
+            out_file = open("istruzioni.txt", "a")
             for row in reader:
-                for r in row.split():
-                    out_file.write(str(r))
+                lines = str(row).split(delimiter)
+                for line in lines:
+                    out_file.write(line)
             out_file.close()
