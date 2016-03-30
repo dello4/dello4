@@ -59,16 +59,16 @@ class JIRAReader(object):
     def get_option(self):
         return self.opt
     
-    def read_csv_file(self, file_to_open):
+    def read_csv_file(self, file_to_open, delimiter):
         '''
-        This method returns a list of script contained in a CSV file
+        This method returns a list of strings contained in a CSV file with a given separator
         '''
-        #csv_file = csv.reader(open(file_to_open), delimiter = self.conf.get('script', 'split_separator'))
-        with open(file_to_open, 'rb') as file:
-            csv_file = file.read()
-            return csv_file
-        #scriptsAsString = csv_file.read().lower()
-        #if self.opt.get('script', 'split_enabled'):
-        #    scripts_list = scriptsAsString.split(self.conf.get('script', 'split_separator'))
-        #    return scripts_list
-        #return scriptsAsString
+        with open(file_to_open) as file:
+            csv_file = csv.reader(file, delimiter=delimiter, quotechar='\'')
+            csv_to_list = []
+            index = 0
+            for rows in csv_file:
+                while index < len(rows):
+                    csv_to_list.append(rows[index])
+                    index +=1
+            return csv_to_list
