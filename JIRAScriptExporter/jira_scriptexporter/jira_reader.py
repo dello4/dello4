@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 
 from jira import JIRA
 
-from jira_scriptexporter.config_reader import ConfigFileReader
+from utility.config_reader import ConfigFileReader
 
 
 class JIRAReader(object):
