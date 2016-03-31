@@ -16,7 +16,7 @@ class ScriptValidator(object):
         conf = config_read
         self.opt = conf.options
 
-    def quotes_remover(self, quotedString):
+    def _quotes_remover(self, quotedString):
         stringWithoutQuotes = quotedString.replace('"', '')
         return stringWithoutQuotes
     
@@ -35,13 +35,13 @@ class ScriptValidator(object):
                     #Loading base elements from the configuration file
                     strings = [logname.lower()]
                     for (each_key, each_val) in self.opt.items('base_elements'):
-                        strings.append(self.quotes_remover(each_val))
+                        strings.append(self._quotes_remover(each_val))
                     if is_debug:
                         print(strings)
                     #Errors list loaded from config file
                     errorsList = []
                     for (each_key, each_val) in self.opt.items('errors'):
-                        errorsList.append(self.quotes_remover(each_val))
+                        errorsList.append(self._quotes_remover(each_val))
                     if is_debug:
                         print(errorsList)
                     #Verify the script
