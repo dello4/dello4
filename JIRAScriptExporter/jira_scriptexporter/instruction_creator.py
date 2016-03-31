@@ -7,6 +7,7 @@ import csv
 import os
 import sys
 
+from utility.script_validator import ScriptValidator
 
 class InstructionCreator(object):
     '''
@@ -28,36 +29,42 @@ class InstructionCreator(object):
             if name in files:
                 return os.path.join(root, name)
     
-    def generate_instructions(self, source_type):
+    def copy_model(self):
+        out_file = open("istruzioni.txt", "a")
+        with open(self.opt.get('system', 'model_name'), 'r') as model_file:
+            for line in model_file:
+                out_file.write(line)
+        model_file.close()
+        out_file.close()
+        
+    def generate_from_csv(self, validate):
+        with open(self.file) as csvfile:
+            delimiter = self.opt.get('script', 'split_separator')
+            reader = csv.reader(csvfile, delimiter=delimiter, quotechar='\'')
+            index = 0
+            out_file = open("istruzioni.txt", "a")
+            for rows in reader:
+                while index < len(rows):
+                    root_to_search_in = self.opt.get('system','root_find')
+                    out_path = self._find(rows[index],root_to_search_in)
+                    if self.is_relative_enabled:
+                        out_path = out_path.replace(root_to_search_in,'.\\')
+                    out_file.writelines('\t' + out_path + '\n')
+                    index +=1
+                    print("Writing line {0} of {1}".format(index, len(rows)))
+            print("Instructions file created.")
+            out_file.close()
+    
+    def generate_instructions(self, source_type, validation):
         if self.opt.get('system', 'model'):
-            out_file = open("istruzioni.txt", "a")
-            with open(self.opt.get('system', 'model_name'), 'r') as model_file:
-                for line in model_file:
-                    out_file.write(line)
-            model_file.close()
-        else:
-            out_file = open("istruzioni.txt", "a")
+            self.copy_model()
         if self.case_csv == source_type:
-            with open(self.file) as csvfile:
-                delimiter = self.opt.get('script', 'split_separator')
-                reader = csv.reader(csvfile, delimiter=delimiter, quotechar='\'')
-                index = 0
-                for rows in reader:
-                    while index < len(rows):
-                        root_to_find_in = self.opt.get('system','root_find')
-                        out_path = self._find(rows[index],root_to_find_in)
-                        if self.is_relative_enabled:
-                            out_path = out_path.replace(root_to_find_in,'.\\')
-                        out_file.writelines('\t' + out_path + '\n')
-                        index +=1
-                        print("Writing line {0} of {1}".format(index, len(rows)))
-                print("Instructions file created.")
+            self.generate_from_csv(self.opt.get('system', 'validate'))
         elif self.case_txt == source_type:
             pass
         else:
             print("No valid value for source_type in JIRAExporter.cfg !!!")
         print("Saving instruction file.")
-        out_file.close()
-        print("File {0} saved.".format(out_file.name))
+        print("File {0} saved.".format(self.opt.get('script', 'inst_filename')))
         sys.exit(2)
             
