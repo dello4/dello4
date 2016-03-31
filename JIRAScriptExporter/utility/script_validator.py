@@ -1,55 +1,61 @@
-# coding=utf-8
+'''
+Created on 25/mar/2016
 
+@author: Andrea Dell'Orto
+'''
 import os
-import configparser
-import inspect
 
-def quotes_remover(quotedString):
-    stringWithoutQuotes = quotedString.replace('"', '')
-    return stringWithoutQuotes
- 
-#Input directory for the script is read from file
-cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\JIRAExporter.cfg'
-config = configparser.ConfigParser()
-config.readfp(open(cfgFilePath))
+from tempfile import NamedTemporaryFile
 
-isDebug = config.getboolean('sys','isDebug')
-isError = False
+class ScriptValidator(object):
+    '''
+    Class implementing various validators for SQL scripts
+    '''
 
-if config.has_section('dir'):
-    inputdir = config.get('dir','input')
+    def __init__(self, config_read):
+        conf = config_read
+        self.opt = conf.options
 
-    for file in os.listdir(inputdir):
-        #Only sql files
-        if file.endswith(".sql"):
-            file = os.path.join(inputdir,file)
-            script = open(file)
-            scriptAsString = script.read().lower()
-            logname = 'spool &path.&nomeschema._'+os.path.splitext(os.path.basename(script.name))[0]+'.log\n'
+    def quotes_remover(self, quotedString):
+        stringWithoutQuotes = quotedString.replace('"', '')
+        return stringWithoutQuotes
+    
+    def validate(self):
+        is_error = False
+        is_debug = self.opt.getboolean('system','is_debug')
+        if self.opt.has_section('system'):
+            inputdir = self.opt.get('system','root_find')
+            for file in os.listdir(inputdir):
+                #Only sql files
+                if file.endswith(".sql"):
+                    file = os.path.join(inputdir,file)
+                    script = open(file)
+                    scriptAsString = script.read().lower()
+                    logname = 'spool &path.&nomeschema._'+os.path.splitext(os.path.basename(script.name))[0]+'.log\n'
+                    #Loading base elements from the configuration file
+                    strings = [logname.lower()]
+                    for (each_key, each_val) in self.opt.items('base_elements'):
+                        strings.append(self.quotes_remover(each_val))
+                    if is_debug:
+                        print(strings)
+                    #Errors list loaded from config file
+                    errorsList = []
+                    for (each_key, each_val) in self.opt.items('errors'):
+                        errorsList.append(self.quotes_remover(each_val))
+                    if is_debug:
+                        print(errorsList)
+                    #Verify the script
+                    #Lowercase conversion of the entire script to perform statement analisys
+                    if all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
+                        print("Script " + os.path.basename(script.name) + " è verificato.")
+                    else:
+                        print("ERR02: Lo script " + file + " non rispetta lo standard!! - Non è presente o è scritto male ")
+                        script.close()
+                        is_error = True
+                        break
+                    script.close()
+            if not is_error:
+                print("Tutti gli script sembrano essere coerenti!")
+        else:
+            print("ERR01 - File di configurazione non trovato.")
             
-            #Loading base elements from the configuration file
-            strings = [logname.lower()]
-            for (each_key, each_val) in config.items('base_elements'):
-                strings.append(quotes_remover(each_val))
-            if isDebug: print(strings)
-            #Errors list loaded from config file
-            errorsList = []
-            for (each_key, each_val) in config.items('errors'):
-                errorsList.append(quotes_remover(each_val))
-            if isDebug: print(errorsList)
-            #Verify the script
-            #Lowercase conversion of the entire script to perform statement analisys
-            if all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
-                print("Script " + os.path.basename(script.name) + " Ã¨ verificato.")
-            else:
-                print("ERR02: Lo script " + file + " non rispetta lo standard!! - Non Ã¨ presente o Ã¨ scritto male ")
-                script.close()
-                isError = True
-                break
-            script.close()
-    if not isError:
-        print("Tutti gli script sembrano essere coerenti!")
-else:
-    print("ERR01 - File di configurazione non trovato.")
-
-input("Press any key to exit...")
