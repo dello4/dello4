@@ -8,6 +8,7 @@ import os
 import sys
 
 from utility.script_validator import ScriptValidator
+from utility.finder import Finder
 
 class InstructionCreator(object):
     '''
@@ -25,11 +26,6 @@ class InstructionCreator(object):
         self.is_relative_enabled = self.opt.get('system','relative')
         self.is_validation_enabled = self.opt.get('system','validate')
         
-    def _find(self,name, path):
-        for root, dirs, files in os.walk(path):
-            if name in files:
-                return os.path.join(root, name)
-    
     def copy_model(self):
         out_file = open("istruzioni.txt", "a")
         with open(self.opt.get('system', 'model_name'), 'r') as model_file:
@@ -37,7 +33,6 @@ class InstructionCreator(object):
                 out_file.write(line)
         model_file.close()
         out_file.close()
-        
 
     def generate_txt_file(self,out_path,out_file,root_to_search_in):
         if self.is_relative_enabled:
@@ -54,17 +49,21 @@ class InstructionCreator(object):
             for rows in reader:
                 while index < len(rows):
                     root_to_search_in = self.opt.get('system','root_find')
-                    out_path = self._find(rows[index],root_to_search_in)
-                    if self.opt.is_validation_enabled:
+                    finder1 = Finder()
+                    out_path = finder1.find(rows[index],root_to_search_in)
+                    if self.is_validation_enabled:
                         script_list.append(out_path)
                         self.generate_txt_file(out_path,out_file,root_to_search_in)
                     else: self.generate_txt_file(out_path,out_file,root_to_search_in)
                     index +=1
                     print("Writing line {0} of {1}".format(index, len(rows)))
             print("Instructions file created.\n Starting script validation:...")
-            val = ScriptValidator()
-            val.validate(script_list)
-            out_file.close()
+            val = ScriptValidator(self.opt, self)
+            if val.validate(script_list) :
+                out_file.close()
+                os.remove(out_file)
+            else:
+                out_file.close()
     
     def generate_instructions(self, source_type, validation):
         if self.opt.get('system', 'model'):
