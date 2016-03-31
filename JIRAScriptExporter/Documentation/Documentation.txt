@@ -29,6 +29,7 @@ and write the full local path of those files in a txt instruction file.
 	file_name 	= The file attached to the issue you want to read from
 	split_enabled	= If true it splits the values
 	split_separator = Separator for splitting (in csv is usually a comma  ',')
+	inst_filename	= Instruction file name
 	
 	[system]
 	root_find	= Here goes the path where the script will search for the scripts found in the jira attachment
@@ -36,3 +37,7 @@ and write the full local path of those files in a txt instruction file.
 	model		= This flag tells the program to use a model as an output file
 	model_name	= The name of the model
 	source_type	= The type of the source file we're reading from, values are CSV or TXT
+	validate	= Flag to enable validation of the scripts
+	is_debug	= Flag to enable debug mode
+	
+	[errors], [base_elements] These categories can be populated with your own errors and base element for scripts validation
