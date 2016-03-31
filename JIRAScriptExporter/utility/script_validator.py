@@ -46,8 +46,11 @@ class ScriptValidator(object):
                         print(errorsList)
                     #Verify the script
                     #Lowercase conversion of the entire script to perform statement analisys
-                    if all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
+                    is_script = not "DEF NOMESCHEMA" in scriptAsString
+                    if is_script and all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
                         print("Script " + os.path.basename(script.name) + " è verificato.")
+                    elif not is_script:
+                        pass
                     else:
                         print("ERR02: Lo script " + file + " non rispetta lo standard!! - Non è presente o è scritto male ")
                         script.close()
