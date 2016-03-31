@@ -9,7 +9,7 @@ def quotes_remover(quotedString):
     return stringWithoutQuotes
  
 #Input directory for the script is read from file
-cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\JIRAExporter.cfg'
+cfgFilePath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '\config.ini'
 config = configparser.ConfigParser()
 config.readfp(open(cfgFilePath))
 
