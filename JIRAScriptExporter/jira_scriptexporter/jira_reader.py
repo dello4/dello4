@@ -5,12 +5,11 @@ Created on 25/mar/2016
 '''
 import csv
 import sys
-from tempfile import TemporaryFile, NamedTemporaryFile
-import tempfile
+from tempfile import NamedTemporaryFile
 
 from jira import JIRA
 
-from JIRAScriptExporter.config_reader import ConfigFileReader
+from jira_scriptexporter.config_reader import ConfigFileReader
 
 
 class JIRAReader(object):

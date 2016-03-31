@@ -4,8 +4,8 @@ Created on 25/mar/2016
 @author: Andrea Dell'Orto
 '''
 
-from JIRAScriptExporter.JIRA_reader import JIRAReader
-from JIRAScriptExporter.instruction_creator import InstructionCreator
+from jira_scriptexporter.jira_reader import JIRAReader
+from jira_scriptexporter.instruction_creator import InstructionCreator
 
 def run():
     reader = JIRAReader()
