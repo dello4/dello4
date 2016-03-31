@@ -11,6 +11,8 @@ class ScriptValidator(object):
     '''
     Class implementing various validators for SQL scripts
     '''
+    errors = {"ERR01":"ERR01 - Configuration file not found",
+              "ERR02":"ERR02: The file {0} retun an error - No such file or wrong syntax!!"}
 
     def __init__(self, config_read):
         conf = config_read
@@ -20,16 +22,17 @@ class ScriptValidator(object):
         stringWithoutQuotes = quotedString.replace('"', '')
         return stringWithoutQuotes
     
-    def validate(self):
+    def get_script_from_pilot(self, scriptAsString):
+            print(scriptAsString.split('@',1)[-1:])
+    
+    def validate(self, file_list):
         is_error = False
-        is_debug = self.opt.getboolean('system','is_debug')
         if self.opt.has_section('system'):
-            inputdir = self.opt.get('system','root_find')
-            for file in os.listdir(inputdir):
+            is_debug = self.opt.getboolean('system','is_debug')
+            for file in file_list:
                 #Only sql files
                 if file.endswith(".sql"):
-                    file = os.path.join(inputdir,file)
-                    script = open(file)
+                    script = open(file, 'r')
                     scriptAsString = script.read().lower()
                     logname = 'spool &path.&nomeschema._'+os.path.splitext(os.path.basename(script.name))[0]+'.log\n'
                     #Loading base elements from the configuration file
@@ -48,17 +51,17 @@ class ScriptValidator(object):
                     #Lowercase conversion of the entire script to perform statement analisys
                     is_script = not "DEF NOMESCHEMA" in scriptAsString
                     if is_script and all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
-                        print("Script " + os.path.basename(script.name) + " è verificato.")
+                        print("Script {0} has been verified.".format(os.path.basename(script.name)))
                     elif not is_script:
-                        pass
+                        self.get_script_from_pilot(scriptAsString)
                     else:
-                        print("ERR02: Lo script " + file + " non rispetta lo standard!! - Non è presente o è scritto male ")
+                        print(self.errors.get("ERR02").format(script.name))
                         script.close()
                         is_error = True
                         break
                     script.close()
             if not is_error:
-                print("Tutti gli script sembrano essere coerenti!")
+                print("All scripts verified.")
         else:
-            print("ERR01 - File di configurazione non trovato.")
+            print(self.errors.get("ERR01"))
             

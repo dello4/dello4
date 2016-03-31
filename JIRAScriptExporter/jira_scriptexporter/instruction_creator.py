@@ -23,6 +23,7 @@ class InstructionCreator(object):
         self.file = file
         self.opt = opt
         self.is_relative_enabled = self.opt.get('system','relative')
+        self.is_validation_enabled = self.opt.get('system','validate')
         
     def _find(self,name, path):
         for root, dirs, files in os.walk(path):
@@ -37,22 +38,32 @@ class InstructionCreator(object):
         model_file.close()
         out_file.close()
         
+
+    def generate_txt_file(self,out_path,out_file,root_to_search_in):
+        if self.is_relative_enabled:
+            out_path = out_path.replace(root_to_search_in,'.\\')
+            out_file.writelines('\t' + out_path + '\n')  
+    
     def generate_from_csv(self, validate):
         with open(self.file) as csvfile:
             delimiter = self.opt.get('script', 'split_separator')
             reader = csv.reader(csvfile, delimiter=delimiter, quotechar='\'')
             index = 0
+            script_list = []
             out_file = open("istruzioni.txt", "a")
             for rows in reader:
                 while index < len(rows):
                     root_to_search_in = self.opt.get('system','root_find')
                     out_path = self._find(rows[index],root_to_search_in)
-                    if self.is_relative_enabled:
-                        out_path = out_path.replace(root_to_search_in,'.\\')
-                    out_file.writelines('\t' + out_path + '\n')
+                    if self.opt.is_validation_enabled:
+                        script_list.append(out_path)
+                        self.generate_txt_file(out_path,out_file,root_to_search_in)
+                    else: self.generate_txt_file(out_path,out_file,root_to_search_in)
                     index +=1
                     print("Writing line {0} of {1}".format(index, len(rows)))
-            print("Instructions file created.")
+            print("Instructions file created.\n Starting script validation:...")
+            val = ScriptValidator()
+            val.validate(script_list)
             out_file.close()
     
     def generate_instructions(self, source_type, validation):
