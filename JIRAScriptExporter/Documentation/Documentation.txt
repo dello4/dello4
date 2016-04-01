@@ -40,4 +40,8 @@ and write the full local path of those files in a txt instruction file.
 	validate	= Flag to enable validation of the scripts
 	is_debug	= Flag to enable debug mode
 	
-	[errors], [base_elements] These categories can be populated with your own errors and base element for scripts validation
+	[errors], [base_elements] 
+				  These categories can be populated with your own errors and base element for scripts validation
+	
+	[ignore_dir]
+				  Values in this list will not be checked during the search for files on the filesystem
