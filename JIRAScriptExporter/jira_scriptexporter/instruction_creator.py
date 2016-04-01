@@ -25,6 +25,8 @@ class InstructionCreator(object):
         self.opt = opt
         self.is_relative_enabled = self.opt.get('system','relative')
         self.is_validation_enabled = self.opt.get('system','validate')
+        self.ignore_list = [each_val for (each_key, each_val) in self.opt.items('ignore_dir')]
+        self.instr_file = self.opt.get('script','inst_filename')
         
     def copy_model(self):
         out_file = open("istruzioni.txt", "a")
@@ -50,31 +52,37 @@ class InstructionCreator(object):
                 while index < len(rows):
                     root_to_search_in = self.opt.get('system','root_find')
                     finder1 = Finder()
-                    out_path = finder1.find(rows[index],root_to_search_in)
+                    out_path = finder1.find(rows[index],root_to_search_in, self.ignore_list)
                     if self.is_validation_enabled:
                         script_list.append(out_path)
                         self.generate_txt_file(out_path,out_file,root_to_search_in)
                     else: self.generate_txt_file(out_path,out_file,root_to_search_in)
                     index +=1
                     print("Writing line {0} of {1}".format(index, len(rows)))
-            print("Instructions file created.\n Starting script validation:...")
+            print("Instructions file created.\n\n ********************************\n",
+                                                "*Starting script validation:...*\n",
+                                                "********************************")
             val = ScriptValidator(self.opt, self)
+            out_file.close()
             if val.validate(script_list) :
                 out_file.close()
-                os.remove(out_file)
+                return True
             else:
                 out_file.close()
+                os.remove(self.instr_file)
+                return False
     
     def generate_instructions(self, source_type, validation):
         if self.opt.get('system', 'model'):
             self.copy_model()
         if self.case_csv == source_type:
-            self.generate_from_csv(self.opt.get('system', 'validate'))
+            ok = self.generate_from_csv(self.opt.get('system', 'validate'))
         elif self.case_txt == source_type:
             pass
         else:
             print("No valid value for source_type in JIRAExporter.cfg !!!")
-        print("Saving instruction file.")
-        print("File {0} saved.".format(self.opt.get('script', 'inst_filename')))
+        if ok:
+            print("Saving instruction file.")
+            print("File {0} saved.".format(self.opt.get('script', 'inst_filename')))
         sys.exit(2)
             
