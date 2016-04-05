@@ -55,11 +55,14 @@ class ScriptValidator(object):
                     scriptAsString = script.read().lower()
                     logname = 'spool &path.&nomeschema._' + os.path.splitext(os.path.basename(script.name))[0] + '.log\n'
                     # Loading base elements from the configuration file
-                    strings = [logname.lower()]
+                    dml_strings = [logname.lower()]
+                    ddl_strings = dml_strings
                     for (each_key, each_val) in self.opt.items('base_elements'):
-                        strings.append(self._quotes_remover(each_val))
+                        dml_strings.append(self._quotes_remover(each_val))
+                    for (each_key, each_val) in self.opt.items('ddl_elements'):
+                        ddl_strings.append(self._quotes_remover(each_val))
                     if self.is_debug:
-                        print(strings)
+                        print(dml_strings)
                     # Errors list loaded from config file
                     errorsList = []
                     for (each_key, each_val) in self.opt.items('errors'):
@@ -72,8 +75,10 @@ class ScriptValidator(object):
                     if is_pilot:
                         to_be_ver = self.get_script_from_pilot(scriptAsString)
                         return self.validate(to_be_ver)
-                    elif not is_pilot and all(s.lower() in scriptAsString for s in strings) and not any(s.lower() in scriptAsString for s in errorsList):
+                    elif not is_pilot and all(s.lower() in scriptAsString for s in dml_strings) and not any(s.lower() in scriptAsString for s in errorsList):
                         print("Script {0} has been verified.".format(os.path.basename(script.name)))
+                    elif not is_pilot and all(s.lower() in scriptAsString for s in ddl_strings) and not any(s.lower() in scriptAsString for s in errorsList):
+                        pass
                     else:
                         print(self.errors.get("ERR02").format(script.name))
                         script.close()
